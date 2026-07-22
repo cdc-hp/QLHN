@@ -5,4 +5,4 @@ if not exist .venv (
 )
 call .venv\Scripts\activate
 python -m pip install -r requirements.txt
-python app.py
+python app_khnv.py
