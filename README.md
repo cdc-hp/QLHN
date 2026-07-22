@@ -1,6 +1,30 @@
-# GPHN CDC Hải Phòng — phiên bản 0.2
+# GPHN CDC Hải Phòng — phiên bản 0.2.1
 
 Ứng dụng thử nghiệm nội bộ bằng **FastAPI + SQLite**, giao diện tiếng Việt, phục vụ CDC Hải Phòng quản lý giấy phép của nhân sự thuộc đơn vị và lập hồ sơ đăng ký hành nghề với Sở Y tế.
+
+## Đơn vị chủ trì
+
+**Phòng Kế hoạch - Nghiệp vụ (KHNV)** là đầu mối chủ trì:
+
+- tiếp nhận thông tin từ các khoa/phòng;
+- rà soát giấy phép, phạm vi hành nghề, vị trí và lịch hành nghề;
+- phối hợp Phòng Tổ chức - Hành chính xác nhận thông tin nhân sự khi cần;
+- hoàn thiện danh sách và công văn trình Lãnh đạo CDC;
+- gửi hồ sơ đăng ký hành nghề đến Sở Y tế;
+- theo dõi yêu cầu bổ sung và kết quả Sở Y tế ghi nhận.
+
+Luồng nội bộ dự kiến:
+
+```text
+Khoa/phòng đề nghị
+→ KHNV tiếp nhận
+→ KHNV rà soát GPHN và vị trí
+→ TCHC phối hợp xác nhận nhân sự
+→ KHNV hoàn thiện hồ sơ
+→ Lãnh đạo CDC duyệt
+→ Gửi Sở Y tế
+→ Theo dõi phản hồi
+```
 
 ## Phạm vi nghiệp vụ
 
@@ -10,25 +34,23 @@ CDC thực hiện:
 - lưu, đối chiếu và theo dõi hiệu lực chứng chỉ/giấy phép đã được cơ quan có thẩm quyền cấp;
 - quản lý vị trí công tác hành nghề, khoa/phòng, địa điểm, cơ sở chính/ngoài giờ và lịch làm việc;
 - kiểm tra trùng lịch, giấy phép hợp lệ và thông tin cần thiết trước khi đăng ký;
-- xử lý luồng nội bộ: Khoa/phòng → TCHC → KHNV → Lãnh đạo CDC;
 - lập công văn/danh sách gửi Sở Y tế;
 - theo dõi ngày gửi, tiếp nhận, yêu cầu bổ sung và kết quả Sở Y tế ghi nhận;
-- quản lý CME, cảnh báo và nhật ký thao tác.
+- quản lý cảnh báo và lịch sử trạng thái hồ sơ.
 
 CDC **không** cấp mới, cấp lại, gia hạn, điều chỉnh, đình chỉ hoặc thu hồi giấy phép; không tiếp nhận hồ sơ của các cơ sở khác trong toàn thành phố.
 
 ## Chức năng đã có
 
 - Hồ sơ người hành nghề và dữ liệu nhân sự CDC.
-- Nhiều giấy phép/chứng chỉ theo lịch sử, tệp scan và trạng thái đối chiếu bản gốc.
-- Danh mục địa điểm thuộc CDC và cơ sở ngoài CDC chỉ dùng để khai báo/đối chiếu.
+- Nhiều giấy phép/chứng chỉ theo lịch sử và trạng thái đối chiếu bản gốc.
 - Vị trí hành nghề, cơ sở chính, khoa/phòng, thời gian hiệu lực và lịch tuần.
-- Kiểm tra trùng lịch, trùng cơ sở chính và giấy phép hợp lệ.
-- Luồng nội bộ đăng ký hành nghề.
-- Gom nhiều vị trí đã duyệt vào một đợt/công văn gửi Sở Y tế.
+- Kiểm tra sơ bộ trùng lịch và giấy phép hợp lệ.
+- Luồng nội bộ do KHNV chủ trì, có bước TCHC phối hợp.
+- Cập nhật trạng thái từng vị trí hành nghề.
+- Chỉ đưa vị trí đã được Lãnh đạo CDC duyệt vào hồ sơ gửi Sở.
+- Gom nhiều vị trí vào một công văn/đợt đăng ký gửi Sở Y tế.
 - Theo dõi phản hồi của Sở và cập nhật trạng thái từng vị trí.
-- Theo dõi CME 120 giờ/05 năm, cảnh báo và xuất Excel.
-- Nhật ký thao tác.
 
 ## Chạy trên Windows
 
@@ -46,6 +68,8 @@ pip install -r requirements.txt
 run.bat
 ```
 
+Tệp `run.bat` chạy điểm vào `app_khnv.py`, là phiên bản đã hiệu chỉnh đúng vai trò KHNV chủ trì.
+
 3. Truy cập `http://127.0.0.1:8000`.
 
 Tài khoản dữ liệu mẫu:
@@ -61,23 +85,17 @@ Máy cần Python 3.11 hoặc 3.12.
 
 ## Dữ liệu
 
-- SQLite cục bộ: `gphn_manager.db` — không đưa vào Git.
-- Tệp đính kèm: `app/uploads/` — không đưa dữ liệu thật vào Git.
-- Có thể chuyển PostgreSQL bằng biến môi trường `DATABASE_URL`.
+- SQLite cục bộ: `qlhn.db` — không đưa vào Git.
+- Không đưa dữ liệu nhân sự, số định danh hoặc bản scan giấy phép thật lên GitHub.
+- Có thể chuyển PostgreSQL trong giai đoạn triển khai chính thức.
 
-## Kiểm thử
-
-```bash
-pytest
-```
-
-## Nội dung còn để mở
+## Nội dung cần tiếp tục rà soát
 
 - danh mục vị trí chuẩn theo từng khoa/phòng và chức danh;
-- đơn vị chủ trì thực tế giữa TCHC và KHNV;
-- biểu mẫu/công văn đăng ký gửi Sở;
+- biểu mẫu và cấu trúc danh sách đăng ký gửi Sở;
 - quy tắc thay đổi vị trí, thời gian, cơ sở ngoài giờ và chấm dứt;
 - mốc thời gian phải thông báo Sở khi có biến động;
-- chữ ký số, HPNET, nhập Excel hàng loạt và phân quyền nhiều cấp.
+- phân quyền người nhập tại khoa/phòng, KHNV, TCHC và Lãnh đạo CDC;
+- chữ ký số, HPNET và nhập Excel hàng loạt.
 
 Đây là bản thử nghiệm nghiệp vụ, chưa dùng cho dữ liệu thật trên Internet.
